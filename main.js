@@ -1,0 +1,58 @@
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import {getLlama, LlamaChatSession} from "node-llama-cpp";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const modelFilename = "hf_unsloth_Llama-3.2-3B-Instruct.Q4_K_M.gguf";
+const modelPath = path.join(__dirname, "models", modelFilename);
+let llama, model, context, session;
+
+async function loadModel() {
+  llama = await getLlama();
+  model = await llama.loadModel({modelPath});
+  context = await model.createContext();
+  session = new LlamaChatSession({
+      contextSequence: context.getSequence()
+  });
+  return true;
+}
+
+ipcMain.handle("loadModel", loadModel);
+
+async function chat(event, prompt) {
+  return await session.prompt(prompt);
+}
+
+ipcMain.handle("chat", chat);
+
+const createWindow = () => {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+
+  win.loadFile('index.html');
+  win.webContents.openDevTools();
+}
+
+app.whenReady().then(() => {
+  ipcMain.handle('ping', () => 'pong');
+  createWindow();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});

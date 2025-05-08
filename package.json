@@ -1,0 +1,15 @@
+{
+  "name": "cadence",
+  "version": "1.0.0",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "node-llama-cpp": "^3.7.0"
+  },
+  "devDependencies": {
+    "electron": "^36.2.0"
+  }
+}
