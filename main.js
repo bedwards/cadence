@@ -31,13 +31,16 @@ const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
+    webPreferences: {preload: path.join(__dirname, 'preload.js')}
   });
 
+  win.maximize();
   win.loadFile('index.html');
   win.webContents.openDevTools();
+  win.webContents.once('devtools-opened', () => {
+    win.webContents.focus();
+    win.webContents.send('focus-lyric-editor');
+  });
 }
 
 app.whenReady().then(() => {

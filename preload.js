@@ -11,4 +11,6 @@ contextBridge.exposeInMainWorld('versions', {
 contextBridge.exposeInMainWorld("electronAPI", {
   loadModel: () => ipcRenderer.invoke("loadModel"),
   chat: (prompt) => ipcRenderer.invoke("chat", prompt),
+  focusLyricEditor: (callback) => ipcRenderer.on('focus-lyric-editor', callback)
 });
+
