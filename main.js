@@ -5,7 +5,11 @@ import {getLlama, LlamaChatSession} from "node-llama-cpp";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const modelFilename = "hf_unsloth_Llama-3.2-3B-Instruct.Q4_K_M.gguf";
+
+// const modelFilename = "hf_unsloth_Llama-3.2-3B-Instruct.Q4_K_M.gguf";
+const modelFilename = "cadence-llama32-3b-instruct-q4km-kaggle.gguf";
+// const modelFilename = "cadence-llama32-3b-instruct-q4km-colab.gguf";
+
 const modelPath = path.join(__dirname, "models", modelFilename);
 let llama, model, context, session;
 
@@ -21,11 +25,21 @@ async function loadModel() {
 
 ipcMain.handle("loadModel", loadModel);
 
-async function chat(event, prompt) {
-  return await session.prompt(prompt);
+async function promptModel(event, promptText) {
+  return await session.prompt(promptText, {
+
+    maxTokens: 128,
+    temperature: 1.5,
+    minP: 0.1,
+
+    top_p: 0.95,
+    top_k: 40,
+    repeat_penalty: 1.1,
+    stop: ["\n\n"]
+  })
 }
 
-ipcMain.handle("chat", chat);
+ipcMain.handle("promptModel", promptModel);
 
 const createWindow = () => {
   const win = new BrowserWindow({

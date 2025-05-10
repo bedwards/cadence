@@ -7,15 +7,28 @@ const ping = async () => {
   console.log(response);
 }
 
-const chat = async () => {
-  const q1 = "Hi there, how are you?";
-  console.log("User: " + q1);
-  const a1 = await window.electronAPI.chat(q1);
-  console.log("AI: " + a1);
-  const q2 = "Summarize what you said";
-  console.log("User: " + q2);
-  const a2 = await window.electronAPI.chat(q2);
-  console.log("AI: " + a2);
+const promptModel = async () => {
+
+  let promptText = `Write 2 more lines of this song. Do not add commentary. Do not put the lyrics you generate in quotes.
+Context:
+Imagine there's no heaven
+It's easy if you try`;
+
+  let completion = await window.electronAPI.promptModel(promptText);
+
+  // No hell below us
+  // Above us only sky
+  console.log(completion);
+
+  promptText = `Write 2 more lines of this song. Do not add commentary. Do not put the lyrics you generate in quotes.
+Context:
+These urban streets are dull and gray
+Can't find a glimmer of hope anywhere`;
+  completion = await window.electronAPI.promptModel(promptText);
+
+  // The chimneys spew out plumes of smoke
+  // And sky looms dark with despair
+  console.log(completion);
 }
 
 const sizeTextArea = () => {
@@ -27,7 +40,7 @@ const loadModel = async () => {
   console.log("loading model");
   await window.electronAPI.loadModel();
   console.log("model loaded");
-  chat();
+  promptModel();
 }
 
 sizeTextArea();
